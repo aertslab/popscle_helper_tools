@@ -2,9 +2,9 @@
 #
 # Copyright (C): 2020 - Gert Hulselmans
 #
-# Purpose: Filter BAM file for usage with dsc-pileup of popscle by keeping reads that:
-#            - overlap with SNPs in the VCF file
-#            - and have a cell barcode contained in the cell barcode list 
+# Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping only reads:
+#            - which overlap with SNPs in the VCF file
+#            - and which have a cell barcode contained in the cell barcode list
 #          Keeping only relevant reads for dsc-pileup can speedup it up several hunderd times.
 
 
@@ -62,10 +62,10 @@ filter_bam_file_for_popscle_dsc_pileup () {
 
     if [ ${#@} -ne 4 ] ; then
         printf 'Usage:   filter_bam_file_for_popscle_dsc_pileup input_bam_filename barcodes_tsv_filename vcf_filename output_bam_filename\n\n';
-        printf 'Purpose: Filter BAM file for usage with dsc-pileup of popscle by keeping reads that:\n';
-        printf '           - overlap with SNPs in the VCF file\n';
-        printf '           - and have a cell barcode contained in the cell barcode list\n';
-        printf '         Keeping only relevant reads for dsc-pileup can speedup it up several hunderd times.\n\n';
+        printf 'Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping reads:\n';
+        printf '           - which overlap with SNPs in the VCF file\n';
+        printf '           - and which have a cell barcode contained in the cell barcode list\n';
+        printf '         Keeping only relevant reads for popscle dsc-pileup can speedup it up several hunderd times.\n\n';
 
         return 1;
     fi
