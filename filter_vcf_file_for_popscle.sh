@@ -99,13 +99,13 @@ get_samples_names_in_vcf () {
 
     check_exit_codes;
 
-    return 1;
+    return $?;
 }
 
 
 
 subset_samples_from_vcf () {
-    # Comma separated list of samples to extract from VCF file..
+    # Comma separated list of samples to extract from VCF file.
     local samples="${1}";
 
     # VCF input file to use or stdin when no VCF input file is given.
@@ -144,7 +144,7 @@ filter_out_mutations_missing_genotype_for_one_or_more_samples () {
     # as those mutations are not very informative.
     bcftools view --genotype '^miss' "${vcf_input_file}";
 
-    return $?
+    return $?;
 }
 
 
@@ -156,7 +156,7 @@ filter_out_mutations_heterozygous_for_one_or_more_samples () {
     # Filter out mutations which are heterozygous for one or more samples.
     bcftools view --genotype '^het' "${vcf_input_file}";
 
-    return $?
+    return $?;
 }
 
 
@@ -168,7 +168,7 @@ filter_out_mutations_homozygous_reference_in_all_samples () {
     # Filter out mutation which are homozygous reference in all samples.
     bcftools view --exclude 'AC=0' "${vcf_input_file}";
 
-    return $?
+    return $?;
 }
 
 
@@ -180,7 +180,7 @@ filter_out_mutations_homozygous_in_all_samples () {
     # Filter out mutations which are homozygous in all samples.
     bcftools view --exclude 'AC=AN' "${vcf_input_file}";
 
-    return $?
+    return $?;
 }
 
 
@@ -189,10 +189,10 @@ filter_out_mutations_not_unique_for_one_sample () {
     # VCF input file to use or stdin when no VCF input file is given.
     local vcf_input_file="${1:-/dev/stdin}";
 
-    # Filter out mutations which are found homzygous in more than one sample.
+    # Filter out mutations which are found homozygous in more than one sample.
     bcftools view --include 'AC=2' "${vcf_input_file}";
 
-    return $?
+    return $?;
 }
 
 
@@ -204,6 +204,6 @@ calculate_AF_AC_AN_values_based_on_genotype_info () {
     # (Re)calculate AF, AC, AN values bases on the genotype info provided for each sample.
     bcftools plugin fill-tags "${vcf_input_file}" -- --tags 'AF,AC,AN';
 
-    return $?
+    return $?;
 }
 
