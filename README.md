@@ -42,6 +42,39 @@ popscle dsc-pileup \
 
 
 
+## Sort VCF file in the same order as the BAM file
+
+Sort VCF file in the same order as the BAM file so the following `popscle dsc-pileup`
+error can be solved easily:
+
+```
+[E:%s] Your VCF/BCF files and SAM/BAM/CRAM files have different ordering of chromosomes. SAM/BAM/CRAM file has %s before %s, but VCF/BCF file has %s after %s"
+```
+
+```
+$ ./sort_vcf_same_as_bam.sh
+Usage: sort_vcf_same_as_bam BAM_file VCF_file
+
+Arguments:
+  - BAM_file: BAM file from which to get the contig order to sort the VCF file.
+  - VCF_file: VCF file to sort by contig order as defined in the BAM file.
+
+Purpose:
+  Sort VCF file in the same order as the BAM file, so it can be used with popscle.
+```
+
+### Example
+
+```bash
+# Sort VCF file in the same order as the BAM file, so it can be used with popscle.
+./sort_vcf_same_as_bam.sh \
+    ./samples_to_demultiplex/outs/possorted_genome_bam.bam \
+    samples.vcf \
+  > /tmp/samples.sorted_as_in_bam.vcf
+```
+
+
+
 ## Create filtered VCF files.
 
 ### Import functions
