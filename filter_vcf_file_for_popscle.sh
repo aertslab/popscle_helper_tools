@@ -26,15 +26,15 @@ check_exit_codes () {
 check_if_programs_exists () {
     local exit_code=0;
 
-    # Check if bcftools is installed.
-    if ! type bcftools > /dev/null 2>&1 ; then
-        printf 'Error: "bcftools" could not be found in PATH.\n';
+    # Check if awk is installed.
+    if ! type awk > /dev/null 2>&1 ; then
+        printf 'Error: "awk" could not be found in PATH.\n';
         exit_code=2;
     fi
 
-    # Check if samtools is installed.
-    if ! type awk > /dev/null 2>&1 ; then
-        printf 'Error: "samtools" could not be found in PATH.\n';
+    # Check if bcftools is installed.
+    if ! type bcftools > /dev/null 2>&1 ; then
+        printf 'Error: "bcftools" could not be found in PATH.\n';
         exit_code=2;
     fi
 
