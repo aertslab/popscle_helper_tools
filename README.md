@@ -9,7 +9,7 @@ Collection of tools to make [popscle](https://github.com/statgen/popscle) easier
 Filter BAM file for usage with `popscle dsc-pileup` by keeping reads that:
   - overlap with SNPs in the VCF file
   - and have a cell barcode contained in the cell barcode list
-Keeping only relevant reads for `popscle dsc-pileup` can speedup it up several hunderd times.
+Keeping only relevant reads for `popscle dsc-pileup` can speedup it up several hundred times.
 
 ```
 $ ./filter_bam_file_for_popscle_dsc_pileup.sh
@@ -18,7 +18,7 @@ Usage:   filter_bam_file_for_popscle_dsc_pileup input_bam_filename barcodes_tsv_
 Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping reads:
            - which overlap with SNPs in the VCF file
            - and which have a cell barcode contained in the cell barcode list
-         Keeping only relevant reads for popscle dsc-pileup can speedup it up several hunderd times.
+         Keeping only relevant reads for popscle dsc-pileup can speedup it up several hundred times.
 
 ```
 
@@ -258,7 +258,7 @@ Create (minimal) VCF file for `popscle dsc-pileup` for 3 inbread lines (homozygo
   - Only keep mutations for 3 selected samples
   - Only keep SNPs
   - (Re)calculate allele frequency (`AF`), allele count (`AC`), total number of alleles (`AN`).
-  - Remove all SNPs which are missinge genotype information for at least one sample (not useful to call those positions in `popscle dsc-pileup`).
+  - Remove all SNPs which are missing genotype information for at least one sample (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are homozygous reference in all samples (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are homozygous in all samples (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are heterozygous in at least one sample (those mutations shouldn't exist in inbred lines).
@@ -279,7 +279,7 @@ subset_samples_from_vcf DGRP-032,DGRP-026,DGRP-042 DGRP2.source_BCM-HGSC.dm6.fin
 Create (minimal) VCF file for `popscle dsc-pileup` (heterozygous genotype SNPs are very common):
   - Only keep SNPs.
   - (Re)calculate allele frequency (`AF`), allele count (`AC`), total number of alleles (`AN`).
-  - Remove all SNPs which are missinge genotype information for at least one sample (not useful to call those positions in `popscle dsc-pileup`).
+  - Remove all SNPs which are missing genotype information for at least one sample (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are homozygous reference in all samples (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are homozygous in all samples (not useful to call those positions in `popscle dsc-pileup`).
 
