@@ -53,23 +53,39 @@ error can be solved easily:
 
 ```
 $ ./sort_vcf_same_as_bam.sh
-Usage: sort_vcf_same_as_bam BAM_file VCF_file
+Usage: sort_vcf_same_as_bam BAM_file VCF_file [VCF_type]
 
 Arguments:
   - BAM_file: BAM file from which to get the contig order to sort the VCF file.
   - VCF_file: VCF file to sort by contig order as defined in the BAM file.
+  - VCF_type: VCF ouput file type (default: same as input VCF file type):
+              v: uncompressed VCF, z: compressed VCF,
+              u: uncompressed BCF, b: compressed BCF
 
 Purpose:
   Sort VCF file in the same order as the BAM file, so it can be used with popscle.
 ```
 
-### Example
+### Examples
 
 ```bash
 # Sort VCF file in the same order as the BAM file, so it can be used with popscle.
 ./sort_vcf_same_as_bam.sh \
     ./samples_to_demultiplex/outs/possorted_genome_bam.bam \
     samples.vcf \
+  > /tmp/samples.sorted_as_in_bam.vcf
+
+# Sort gzipped VCF file in the same order as the BAM file and write compressed VCF file.
+./sort_vcf_same_as_bam.sh \
+    ./samples_to_demultiplex/outs/possorted_genome_bam.bam \
+    samples.vcf.gz \
+  > /tmp/samples.sorted_as_in_bam.vcf.gz
+
+# Sort gzipped VCF file in the same order as the BAM file and write uncompressed VCF file.
+./sort_vcf_same_as_bam.sh \
+    ./samples_to_demultiplex/outs/possorted_genome_bam.bam \
+    samples.vcfi.gz \
+    v \
   > /tmp/samples.sorted_as_in_bam.vcf
 ```
 

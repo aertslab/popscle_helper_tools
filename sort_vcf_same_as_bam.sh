@@ -143,12 +143,16 @@ get_contig_order_from_bam () {
 sort_vcf_same_as_bam () {
     local bam_input_file="${1}";
     local vcf_input_file="${2}";
+    local vcf_type="${3:-v}";
 
-    if [ ${#@} -ne 2 ] ; then
-        printf 'Usage: sort_vcf_same_as_bam BAM_file VCF_file\n\n';
+    if [ ${#@} -lt 2 ] ; then
+        printf 'Usage: sort_vcf_same_as_bam BAM_file VCF_file [VCF_type]\n\n';
         printf 'Arguments:\n';
         printf '  - BAM_file: BAM file from which to get the contig order to sort the VCF file.\n';
-        printf '  - VCF_file: VCF file to sort by contig order as defined in the BAM file.\n\n';
+        printf '  - VCF_file: VCF file to sort by contig order as defined in the BAM file.\n';
+        printf '  - VCF_type: VCF ouput file type (default: same as input VCF file type):\n';
+        printf '              v: uncompressed VCF, z: compressed VCF,\n';
+        printf '              u: uncompressed BCF, b: compressed BCF\n\n';
         printf 'Purpose:\n';
         printf '  Sort VCF file in the same order as the BAM file, so it can be used with popscle.\n\n';
         return 1;
@@ -156,30 +160,38 @@ sort_vcf_same_as_bam () {
 
     check_if_programs_exists || return $?;
 
+    # If VCF type is not specified, try to guess it from the filename extension.
+    if [ ${#@} -eq 2 ] ; then
+        if [ "${vcf_input_file%.vcf.gz}" != "${vcf_input_file}" ] ; then
+            vcf_type='z';
+        elif [ "${vcf_input_file%.bcf}" != "${vcf_input_file}" ] ; then
+             vcf_type='b';
+        fi
+    fi
+
     # Sort VCF file by same chromosome order as BAM file.
-    bcftools reheader \
-        -h <(
-              # Create new VCF header:
-              #   - Get VCF header of VCF input file.
-              #   - Remove all contig header lines and "#CHROM" line from the VCF header.
-              #   - Append contig headers in the order they appear in the input BAM file.
-              #   - Add "#CHROM" line as last line of the new VCF header.
-              bcftools view -h "${vcf_input_file}" \
-                | awk \
-                    '
-                    {
-                        if ($1 !~ /^##contig=/ && $1 !~ /^#CHROM/) {
-                            # Remove all contig header lines and "#CHROM" line.
-                            print $0;
-                        }
-                    }' \
-                      | cat \
-                            - \
-                            <(get_contig_order_from_bam "${bam_input_file}" 'vcf') \
-                            <(bcftools view -h "${vcf_input_file}" | tail -n 1)
-            ) \
-        "${vcf_input_file}" \
-      | bcftools sort;
+    cat <(
+          # Create new VCF header:
+          #   - Get VCF header of VCF input file.
+          #   - Remove all contig header lines and "#CHROM" line from the VCF header.
+          #   - Append contig headers in the order they appear in the input BAM file.
+          #   - Add "#CHROM" line as last line of the new VCF header.
+          bcftools view -h "${vcf_input_file}" \
+            | awk \
+                '
+                {
+                    if ($1 !~ /^##contig=/ && $1 !~ /^#CHROM/) {
+                        # Remove all contig header lines and "#CHROM" line.
+                        print $0;
+                    }
+                }' \
+            | cat \
+                - \
+                <(get_contig_order_from_bam "${bam_input_file}" 'vcf') \
+                <(bcftools view -h "${vcf_input_file}" | tail -n 1) \
+        ) \
+        <(bcftools view -H -O v "${vcf_input_file}") \
+      | bcftools sort -O "${vcf_type}";
 
     check_exit_codes;
 
