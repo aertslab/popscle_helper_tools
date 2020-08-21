@@ -93,6 +93,13 @@ Purpose:
 
 ## Create filtered VCF files.
 
+[BCFtools](https://www.htslib.org) can be used for filtering VCF files.
+
+Looking at the [BCFtools filtering expressions manual](https://www.htslib.org/doc/bcftools.html#expressions)
+gives an idea how to create your own filters for mutations.
+
+
+
 ### Import functions
 
 Import functions in current shell.
@@ -218,6 +225,18 @@ filter_out_mutations_homozygous_reference_in_all_samples [VCF_file]
 
 
 
+### Filter out mutations heterozygous in all samples.
+
+Filter out mutations that are heterozygous in all samples.
+
+If all samples are inbred lines, you might want to remove all non-homozygous SNPs.
+
+```bash
+filter_out_mutations_heterozygous_in_all_samples [VCF_file]
+```
+
+
+
 ### Filter out mutations homozygous in all samples.
 
 Filter out mutations that are homozygous in all samples.
@@ -231,19 +250,13 @@ filter_out_mutations_homozygous_in_all_samples [VCF_file]
 
 
 
-### Filter out mutations not unique for one sample
+### Only keep mutations heterozygous or homozygous in one sample.
 
-Filter out mutations which are not unique for one sample.
-Only mutations that appear homozygous in only one sample are retained.
-
-This can be useful to reduce the number of mutations for `popscle dsc-pileup` when working with inbred lines
-(all mutations are supposed to be homozygous).
-First `filter_out_mutations_heterozygous_for_one_or_more_samples` should be ran to remove all
-mutations with a heterozygous genotype (else also mutations that appear heterozygous in 2 samples
-will be kept too).
+Only keep mutations (heterozygous/homozygous) which are found only in
+one sample, but not at all (heterozygous/homozygous) in other samples.
 
 ```bash
-filter_out_mutations_not_unique_for_one_sample [VCF_file]
+only_keep_mutations_heterozygous_or_homozygous_in_one_sample [VCF_file]
 ```
 
 
@@ -258,7 +271,9 @@ were set incorrectly.
 It is recommended to run this function before running:
   - `filter_out_mutations_homozygous_reference_in_all_samples`: needs correct value for `AC`.
   - `filter_out_mutations_homozygous_in_all_samples`: needs correct value for `AC` and `AN`.
-  - `filter_out_mutations_not_unique_for_one_sample`: needs correct value for `AC`.
+  - `only_keep_mutations_homozygous_in_one_sample`: needs correct value for `AC`.
+  - `only_keep_mutations_heterozygous_in_one_sample`: needs correct value for `AC`.
+  - `only_keep_mutations_heterozygous_or_homozygous_in_one_sample`: needs correct value for `AC`.
 
 Running it after `subset_samples_from_vcf` is also recommended as that function only updates 'AF' but not `AC` and `AN`.
 
@@ -278,7 +293,7 @@ Create (minimal) VCF file for `popscle dsc-pileup` for 3 inbread lines (homozygo
   - Remove all SNPs which are homozygous reference in all samples (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are homozygous in all samples (not useful to call those positions in `popscle dsc-pileup`).
   - Remove all SNPs which are heterozygous in at least one sample (those mutations shouldn't exist in inbred lines).
-  - Only keep SNPs which are homozygous in only one samples.
+  - Only keep SNPs heterozygous or homozygous in one sample (but as heterozygous mutations are already filtered out, only keep homozygous ones).
 
 ```bash
 subset_samples_from_vcf DGRP-032,DGRP-026,DGRP-042 DGRP2.source_BCM-HGSC.dm6.final.bcf \
@@ -288,7 +303,7 @@ subset_samples_from_vcf DGRP-032,DGRP-026,DGRP-042 DGRP2.source_BCM-HGSC.dm6.fin
   | filter_out_mutations_homozygous_reference_in_all_samples \
   | filter_out_mutations_homozygous_in_all_samples \
   | filter_out_mutations_heterozygous_for_one_or_more_samples \
-  | filter_out_mutations_not_unique_for_one_sample \
+  | only_keep_mutations_heterozygous_or_homozygous_in_one_sample \
   > output.vcf
 ```
 

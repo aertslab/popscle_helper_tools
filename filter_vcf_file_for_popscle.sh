@@ -3,6 +3,10 @@
 # Copyright (C): 2020 - Gert Hulselmans
 #
 # Purpose: Functions for filtering VCF files for usage with popscle by removing mutations which are not informative.
+#
+#
+# BCFtools filtering expressions manual:
+#   https://www.htslib.org/doc/bcftools.html#expressions
 
 
 
@@ -173,24 +177,58 @@ filter_out_mutations_homozygous_reference_in_all_samples () {
 
 
 
-filter_out_mutations_homozygous_in_all_samples () {
+filter_out_mutations_heterozygous_in_all_samples () {
     # VCF input file to use or stdin when no VCF input file is given.
     local vcf_input_file="${1:-/dev/stdin}";
 
-    # Filter out mutations which are homozygous in all samples.
-    bcftools view --exclude 'AC=AN' "${vcf_input_file}";
+    # Filter out mutation which are heterozygous in all samples.
+    bcftools view --exclude 'COUNT(GT="het")=N_SAMPLES' "${vcf_input_file}";
 
     return $?;
 }
 
 
 
-filter_out_mutations_not_unique_for_one_sample () {
+filter_out_mutations_homozygous_in_all_samples () {
     # VCF input file to use or stdin when no VCF input file is given.
     local vcf_input_file="${1:-/dev/stdin}";
 
-    # Filter out mutations which are found homozygous in more than one sample.
-    bcftools view --include 'AC=2' "${vcf_input_file}";
+    # Filter out mutations which are homozygous in all samples.
+    bcftools view --exclude 'AC=AN' "${vcf_input_file}";
+    bcftools view \
+        --exclude 'COUNT(GT="AA") = N_SAMPLES' \
+        "${vcf_input_file}";
+
+    return $?;
+}
+
+
+
+only_keep_mutations_homozygous_in_one_sample () {
+    # VCF input file to use or stdin when no VCF input file is given.
+    local vcf_input_file="${1:-/dev/stdin}";
+
+    # Only keep mutations (homozygous) which are found only in one sample,
+    # but not at all (heterozygous/homozygous) in other samples.
+    bcftools view \
+        --include 'COUNT(GT="AA") = 1 && COUNT(GT="RR") = (N_SAMPLES - 1)' \
+        "${vcf_input_file}";
+
+    return $?;
+}
+
+
+
+only_keep_mutations_heterozygous_or_homozygous_in_one_sample () {
+    # VCF input file to use or stdin when no VCF input file is given.
+    local vcf_input_file="${1:-/dev/stdin}";
+
+    # Only keep mutations (heterozygous/homozygous) which are found only in
+    # one sample, but not at all (heterozygous/homozygous) in other samples.
+    bcftools view \
+        --include '( COUNT(GT="AA") = 1 || COUNT(GT="AR") = 1 ) && COUNT(GT="RR") = (N_SAMPLES - 1)' \
+        --include '( AC=2 && ( GT = "1|1" | GT = "1/1") || AC=1 && ( GT = "0|1" | GT = "1|0" | GT = "0/1" | GT = "0/1") )' \
+        "${vcf_input_file}";
 
     return $?;
 }
