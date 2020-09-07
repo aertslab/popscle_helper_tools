@@ -104,6 +104,7 @@ filter_bam_file_for_popscle_dsc_pileup () {
         bedtools merge -i "${vcf_filename}" \
           | samtools view\
                 -@ 8 \
+                --write-index \
                 -L - \
                 -D CB:<(zcat "${barcodes_tsv_filename}") \
                 -o "${output_bam_filename}" \
@@ -118,6 +119,7 @@ filter_bam_file_for_popscle_dsc_pileup () {
         bedtools merge -i "${vcf_filename}" \
           | samtools view\
                 -@ 8 \
+                --write-index \
                 -L - \
                 -D CB:"${barcodes_tsv_filename}" \
                 -o "${output_bam_filename}" \
