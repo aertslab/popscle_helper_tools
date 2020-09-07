@@ -110,7 +110,10 @@ get_contig_order_from_bam () {
                     }
                 }
             } END {
-                if (output_type == "names") {
+                if (contig_idx == 0) {
+                    printf "Error: No \"@SQ\" header line found in BAM file.\n" > "/dev/stderr";
+                    exit(1);
+                } else if (output_type == "names") {
                     contig_names = "";
 
                     for (contig_idx = 1; contig_idx <= length(contig_idx_to_name); contig_idx++) {
