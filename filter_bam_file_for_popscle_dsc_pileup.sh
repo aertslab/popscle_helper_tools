@@ -46,7 +46,7 @@ check_if_programs_exists () {
     fi
 
     # Check if samtools 1.10 or higher is installed (needs to have "-D STR:FILE" option).
-    if ! samtools view 2>&1 | grep -q -- '-D STR:FILE' ; then
+    if ! samtools view --help 2>&1 | grep -q -- '-D STR:FILE' ; then
         printf 'Error: The version of "samtools" (%s) should be 1.10 or higher (%s found).\n' "$(type samtools)" "$(samtools --version | head -n 1)";
         exit_code=2;
     fi
