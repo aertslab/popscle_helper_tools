@@ -194,7 +194,6 @@ filter_out_mutations_homozygous_in_all_samples () {
     local vcf_input_file="${1:-/dev/stdin}";
 
     # Filter out mutations which are homozygous in all samples.
-    bcftools view --exclude 'AC=AN' "${vcf_input_file}";
     bcftools view \
         --exclude 'COUNT(GT="AA") = N_SAMPLES' \
         "${vcf_input_file}";
@@ -210,6 +209,7 @@ only_keep_mutations_homozygous_in_one_sample () {
 
     # Only keep mutations (homozygous) which are found only in one sample,
     # but not at all (heterozygous/homozygous) in other samples.
+    #bcftools view --include 'AC=2 && ( GT = "1|1" | GT = "1/1")' "${vcf_input_file}";
     bcftools view \
         --include 'COUNT(GT="AA") = 1 && COUNT(GT="RR") = (N_SAMPLES - 1)' \
         "${vcf_input_file}";
