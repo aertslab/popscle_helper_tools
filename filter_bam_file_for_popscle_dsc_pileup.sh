@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C): 2020 - Gert Hulselmans
+# Copyright (C): 2020-2021 - Gert Hulselmans
 #
 # Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping only reads:
 #            - which overlap with SNPs in the VCF file
@@ -31,13 +31,13 @@ check_if_programs_exists () {
 
     # Check if bedtools is installed.
     if ! type bedtools > /dev/null 2>&1 ; then
-        printf 'Error: "bedtools" could not be found in PATH.\n';
+        printf 'Error: "bedtools" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
     # Check if samtools is installed.
     if ! type samtools > /dev/null 2>&1 ; then
-        printf 'Error: "samtools" could not be found in PATH.\n';
+        printf 'Error: "samtools" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
@@ -47,7 +47,10 @@ check_if_programs_exists () {
 
     # Check if samtools 1.10 or higher is installed (needs to have "-D STR:FILE" option).
     if ! samtools view --help 2>&1 | grep -q -- '-D STR:FILE' ; then
-        printf 'Error: The version of "samtools" (%s) should be 1.10 or higher (%s found).\n' "$(type samtools)" "$(samtools --version | head -n 1)";
+        printf 'Error: The version of "samtools" (%s) should be 1.10 or higher (%s found).\n' \
+            "$(type samtools)" \
+            "$(samtools --version | head -n 1)" \
+          > /dev/stderr;
         exit_code=2;
     fi
 
@@ -75,17 +78,17 @@ filter_bam_file_for_popscle_dsc_pileup () {
     fi
 
     if [ ! -f  "${input_bam_filename}" ] ; then
-        printf 'Error: Input (CellRanger) BAM file "%s" could not be found.\n' "${input_bam_filename}";
+        printf 'Error: Input (CellRanger) BAM file "%s" could not be found.\n' "${input_bam_filename}" > /dev/stderr;
         return 2;
     fi
 
     if [ ! -f  "${barcodes_tsv_filename}" ] ; then
-        printf 'Error: File with barcodes "%s" could not be found.\n' "${barcodes_tsv_filename}";
+        printf 'Error: File with barcodes "%s" could not be found.\n' "${barcodes_tsv_filename}" > /dev/stderr;
         return 2;
     fi
 
     if [ ! -f  "${vcf_filename}" ] ; then
-        printf 'Error: File with unique SNPs per sample "%s" could not be found.\n' "${vcf_filename}";
+        printf 'Error: File with unique SNPs per sample "%s" could not be found.\n' "${vcf_filename}" > /dev/stderr;
         return 2;
     fi
 

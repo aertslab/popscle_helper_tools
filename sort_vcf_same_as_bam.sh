@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C): 2020 - Gert Hulselmans
+# Copyright (C): 2020-2021 - Gert Hulselmans
 #
 # Purpose: Sort VCF file in the same order as the BAM file, so it can be used with popscle.
 
@@ -28,19 +28,19 @@ check_if_programs_exists () {
 
     # Check if awk is installed.
     if ! type awk > /dev/null 2>&1 ; then
-        printf 'Error: "awk" could not be found in PATH.\n';
+        printf 'Error: "awk" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
     # Check if bcftools is installed.
     if ! type bcftools > /dev/null 2>&1 ; then
-        printf 'Error: "bcftools" could not be found in PATH.\n';
+        printf 'Error: "bcftools" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
     # Check if samtools is installed.
     if ! type samtools > /dev/null 2>&1 ; then
-        printf 'Error: "samtools" could not be found in PATH.\n';
+        printf 'Error: "samtools" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
@@ -73,7 +73,7 @@ get_contig_order_from_bam () {
         'vcf')
             ;;
         *)
-            printf 'Error: output_type "%s" is not supported.\n' "${output_type}";
+            printf 'Error: output_type "%s" is not supported.\n' "${output_type}" > /dev/stderr;
             return 1;
             ;;
     esac

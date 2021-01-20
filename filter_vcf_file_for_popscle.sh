@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C): 2020 - Gert Hulselmans
+# Copyright (C): 2020-2021 - Gert Hulselmans
 #
 # Purpose: Functions for filtering VCF files for usage with popscle by removing mutations which are not informative.
 #
@@ -32,13 +32,13 @@ check_if_programs_exists () {
 
     # Check if awk is installed.
     if ! type awk > /dev/null 2>&1 ; then
-        printf 'Error: "awk" could not be found in PATH.\n';
+        printf 'Error: "awk" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
     # Check if bcftools is installed.
     if ! type bcftools > /dev/null 2>&1 ; then
-        printf 'Error: "bcftools" could not be found in PATH.\n';
+        printf 'Error: "bcftools" could not be found in PATH.\n' > /dev/stderr;
         exit_code=2;
     fi
 
@@ -94,7 +94,7 @@ get_samples_names_in_vcf () {
 
                         exit(0);
                     } else {
-                        printf("Error: No sample names found in VCF file \"%s\".\n", vcf_input_file);
+                        printf "Error: No sample names found in VCF file \"%s\".\n", vcf_input_file > "/dev/stderr";
 
                         exit(1);
                     }
