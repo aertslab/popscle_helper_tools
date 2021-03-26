@@ -6,19 +6,21 @@ Collection of tools to make [popscle](https://github.com/statgen/popscle) easier
 
 ## Filter BAM file for usage with popscle dsc-pileup
 
-Filter BAM file for usage with `popscle dsc-pileup` by keeping reads that:
-  - overlap with SNPs in the VCF file
-  - and have a cell barcode contained in the cell barcode list
-Keeping only relevant reads for `popscle dsc-pileup` can speedup it up several hundred times.
+Filter BAM file for usage with popscle dsc-pileup by keeping reads:
+  - which overlap with SNPs in the VCF file
+  - and which have a cell barcode (default: "CB" tag) contained in the cell barcode list
+Keeping only relevant reads for popscle dsc-pileup can speedup it up quite significantly
+(depending on the reduction of the number of reads in the filtered BAM file vs original).
 
 ```
 $ ./filter_bam_file_for_popscle_dsc_pileup.sh
-Usage:   filter_bam_file_for_popscle_dsc_pileup input_bam_filename barcodes_tsv_filename vcf_filename output_bam_filename
+Usage:   filter_bam_file_for_popscle_dsc_pileup input_bam_filename barcodes_tsv_filename vcf_filename output_bam_filename [barcode_tag]
 
 Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping reads:
            - which overlap with SNPs in the VCF file
-           - and which have a cell barcode contained in the cell barcode list
-         Keeping only relevant reads for popscle dsc-pileup can speedup it up several hundred times.
+           - and which have a cell barcode (default: "CB" tag) contained in the cell barcode list
+         Keeping only relevant reads for popscle dsc-pileup can speedup it up quite significantly
+         (depending on the reduction of the number of reads in the filtered BAM file vs original).
 
 ```
 

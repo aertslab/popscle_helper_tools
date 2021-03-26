@@ -2,10 +2,11 @@
 #
 # Copyright (C): 2020-2021 - Gert Hulselmans
 #
-# Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping only reads:
-#            - which overlap with SNPs in the VCF file
-#            - and which have a cell barcode contained in the cell barcode list
-#          Keeping only relevant reads for dsc-pileup can speedup it up several hunderd times.
+# Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping reads:
+#           - which overlap with SNPs in the VCF file
+#           - and which have a cell barcode (default: "CB" tag) contained in the cell barcode list
+#         Keeping only relevant reads for popscle dsc-pileup can speedup it up quite significantly
+#         (depending on the reduction of the number of reads in the filtered BAM file vs original).
 
 
 
@@ -64,15 +65,17 @@ filter_bam_file_for_popscle_dsc_pileup () {
     local barcodes_tsv_filename="${2}";
     local vcf_filename="${3}";
     local output_bam_filename="${4}";
+    local barcode_tag="${5:-CB}";
 
     local exit_code=0;
 
-    if [ ${#@} -ne 4 ] ; then
-        printf 'Usage:   filter_bam_file_for_popscle_dsc_pileup input_bam_filename barcodes_tsv_filename vcf_filename output_bam_filename\n\n';
+    if [ ${#@} -lt 4 ] ; then
+        printf 'Usage:   filter_bam_file_for_popscle_dsc_pileup input_bam_filename barcodes_tsv_filename vcf_filename output_bam_filename [barcode_tag]\n\n';
         printf 'Purpose: Filter BAM file for usage with popscle dsc-pileup by keeping reads:\n';
         printf '           - which overlap with SNPs in the VCF file\n';
-        printf '           - and which have a cell barcode contained in the cell barcode list\n';
-        printf '         Keeping only relevant reads for popscle dsc-pileup can speedup it up several hunderd times.\n\n';
+        printf '           - and which have a cell barcode (default: "CB" tag) contained in the cell barcode list\n';
+        printf '         Keeping only relevant reads for popscle dsc-pileup can speedup it up quite significantly\n';
+        printf '         (depending on the reduction of the number of reads in the filtered BAM file vs original).\n\n';
 
         return 1;
     fi
@@ -89,6 +92,11 @@ filter_bam_file_for_popscle_dsc_pileup () {
 
     if [ ! -f  "${vcf_filename}" ] ; then
         printf 'Error: File with unique SNPs per sample "%s" could not be found.\n' "${vcf_filename}" > /dev/stderr;
+        return 2;
+    fi
+
+    if [ ${#barcode_tag} -ne 2 ] ; then
+        printf 'Error: Barcode tag "%s" should be 2 characters.\n' "${barcode_tag}" > /dev/stderr;
         return 2;
     fi
 
@@ -109,7 +117,7 @@ filter_bam_file_for_popscle_dsc_pileup () {
                 -@ 8 \
                 --write-index \
                 -L - \
-                -D CB:<(zcat "${barcodes_tsv_filename}") \
+                -D "${barcode_tag}":<(zcat "${barcodes_tsv_filename}") \
                 -o "${output_bam_filename}" \
                 "${input_bam_filename}";
 
@@ -124,7 +132,7 @@ filter_bam_file_for_popscle_dsc_pileup () {
                 -@ 8 \
                 --write-index \
                 -L - \
-                -D CB:"${barcodes_tsv_filename}" \
+                -D "${barcode_tag}":"${barcodes_tsv_filename}" \
                 -o "${output_bam_filename}" \
                 "${input_bam_filename}";
 
