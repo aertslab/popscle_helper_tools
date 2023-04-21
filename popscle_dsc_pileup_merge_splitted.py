@@ -46,6 +46,14 @@ def write_popscle_pileup_cel_full_filename(
                 popscle_pileup_cel_part_filename,
                 separator="\t",
                 has_header=True,
+                dtypes={
+                    "#DROPLET_ID": pl.Int64,
+                    "BARCODE": pl.Utf8,
+                    "NUM.READ": pl.Int64,
+                    "NUM.UMI": pl.Int64,
+                    "NUM.UMIwSNP": pl.Int64,
+                    "NUM.SNP": pl.Int64,
+                },
             )
             .rename({"#DROPLET_ID": "DROPLET_ID_PARTITIONED"})
             .with_columns(
@@ -71,7 +79,18 @@ def write_popscle_pileup_cel_full_filename(
         # file to.
         bytes_io_tsv = io.BytesIO()
 
-        popscle_pileup_cel_df.write_csv(
+        # Remove "DROPLET_ID_PARTITIONED" and "PARTITION" columns before writing
+        # corrected popscle pileup CEL file.
+        popscle_pileup_cel_df.select(
+            [
+                pl.col("DROPLET_ID").alias("#DROPLET_ID"),
+                pl.col("BARCODE"),
+                pl.col("NUM.READ"),
+                pl.col("NUM.UMI"),
+                pl.col("NUM.UMIwSNP"),
+                pl.col("NUM.SNP"),
+            ],
+        ).write_csv(
             bytes_io_tsv,
             has_header=True,
             separator="\t",
@@ -81,7 +100,8 @@ def write_popscle_pileup_cel_full_filename(
         # to full popscle pileup CEL file.
         fh_full.write(bytes_io_tsv.getbuffer())
 
-    # Return corrected popscle pileup CEL output as Polars DataFrame.
+    # Return corrected popscle pileup CEL output with "DROPLET_ID_PARTITIONED" and
+    # "PARTITION" columns as Polars DataFrame.
     return popscle_pileup_cel_df
 
 
@@ -123,6 +143,12 @@ def write_popscle_pileup_plp_full_filename(
                     popscle_pileup_plp_part_filename,
                     separator="\t",
                     has_header=True,
+                    dtypes={
+                        "#DROPLET_ID": pl.Int64,
+                        "SNP_ID": pl.Int64,
+                        "ALLELES": pl.Utf8,
+                        "BASEQS": pl.Utf8,
+                    },
                 )
                 .lazy()
                 .rename({"#DROPLET_ID": "DROPLET_ID_PARTITIONED"})
@@ -230,6 +256,14 @@ def write_popscle_pileup_var_full_filename(
             popscle_pileup_var_part_filename,
             separator="\t",
             has_header=True,
+            dtypes={
+                "#SNP_ID": pl.Int64,
+                "CHROM": pl.Utf8,
+                "POS": pl.Int64,
+                "REF": pl.Utf8,
+                "ALT": pl.Utf8,
+                "AF": pl.Utf8,
+            },
         ).rename({"#SNP_ID": "SNP_ID"})
 
         if popscle_pileup_var_most_complete_df is None:
